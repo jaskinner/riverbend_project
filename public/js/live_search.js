@@ -6,9 +6,9 @@ jQuery(document).ready(function ($) {
 		$('.glossary-item').each(function () {
 			var itemText = $(this).text().toLowerCase();
 			if (itemText.indexOf(searchTerm) > -1) {
-				$(this).show();
+				$(this).parent().parent().show();
 			} else {
-				$(this).hide();
+				$(this).parent().parent().hide();
 			}
 		});
 	});

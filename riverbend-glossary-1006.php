@@ -32,12 +32,12 @@ class Riverbend_Glossary_1006
 		add_action('save_post', array($this, 'riverbend_save_postdata'), 1);
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
 		add_action('wp_enqueue_scripts', array($this, 'my_enqueue_scripts'));
+		add_action('wp_enqueue_scripts', array($this, 'my_enqueue_styles'));
 		add_shortcode('rbg_glossary_1006', array($this, 'rb_glossary_func'));
 	}
-
 	public function rb_glossary_func()
 	{
-		$output = '<input type="text" id="glossary-search" placeholder="Search...">';
+		$output = '<div id="rbg-container"><input type="text" id="glossary-search" placeholder="Search..."><div class="rbg-list">';
 
 		$args = array(
 			'post_type' => 'glossary_item',
@@ -55,32 +55,39 @@ class Riverbend_Glossary_1006
 				$first_letter = strtoupper($title[0]);
 				if ($first_letter !== $current_letter) {
 					if ($current_letter !== '') {
-						$output .= '</div>'; // Close previous group
+						$output .= '</div></div>';
 					}
-					$output .= '<h2>' . $first_letter . '</h2><div class="glossary-group">';
+					$output .= '<div class="glossary-group"><div class="group-header">' . $first_letter . '</div><div class="items-list">';
 					$current_letter = $first_letter;
 				}
-				// Check for link override
+
 				$link_override = get_post_meta(get_the_ID(), '_riverbend_link_override', true);
 				$link = $link_override ? esc_url($link_override) : get_permalink();
 
 				$output .= '<div class="glossary-item"><a href="' . $link . '">' . $title . '</a></div>';
 			}
-			$output .= '</div>'; // Close last group
+			$output .= '</div></div>';
 		}
 		wp_reset_postdata();
+		$output .= '</div></div>';
 
 		return $output;
 	}
 
+
 	public function enqueue_admin_scripts()
 	{
-		wp_enqueue_script('required_fields', plugin_dir_url(__FILE__) . 'public/required_fields.js', array('jquery'), '1.0.0', true);
+		wp_enqueue_script('required_fields', plugin_dir_url(__FILE__) . 'admin/js/required_fields.js', array('jquery'), '1.0.0', true);
 	}
 
 	public function my_enqueue_scripts()
 	{
-		wp_enqueue_script('live_search', plugin_dir_url(__FILE__) . 'public/live_search.js', array('jquery'), '1.0.0', true);
+		wp_enqueue_script('live_search', plugin_dir_url(__FILE__) . 'public/js/live_search.js', array('jquery'), '1.0.0', true);
+	}
+
+	public function my_enqueue_styles()
+	{
+		wp_enqueue_style('live_search', plugin_dir_url(__FILE__) . 'public/css/live_search.css');
 	}
 
 	public function register_glossary_items_type()
